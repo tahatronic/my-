@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صباح الخير رؤيا ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 30px -5px rgba(244, 114, 182, 0.2);
+        }
+        /* Custom smooth transition for checkboxes and text */
+        .item-transition {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-50 via-amber-50/40 to-pink-100/60 min-h-screen flex items-center justify-center p-4 sm:p-6">
+
+    <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl custom-shadow border border-rose-100 p-6 sm:p-8 relative overflow-hidden">
+        
+        <!-- Decorative background elements -->
+        <div class="absolute -top-12 -left-12 w-32 h-32 bg-rose-200/40 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-amber-200/40 rounded-full blur-2xl pointer-events-none"></div>
+
+        <!-- Header Section -->
+        <div class="text-center mb-6 relative z-10">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-rose-100 text-rose-500 rounded-2xl mb-3 shadow-sm text-2xl">
+                🌸
+            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                صباح الخير رؤيا.. لا تنسين أغراضك قبل ما تطلعين ❤️
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500">
+                تأكدي من كل شي حتى يكون نهارك هادئ وجميل! ✨
+            </p>
+        </div>
+
+        <!-- Progress Bar Section -->
+        <div class="mb-6 relative z-10">
+            <div class="flex justify-between items-center mb-2 text-xs font-semibold text-gray-600">
+                <span id="progress-text">تم إنجاز 0 من 5</span>
+                <span id="progress-percentage">0%</span>
+            </div>
+            <div class="w-full bg-rose-100/60 h-2.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-rose-400 to-pink-500 h-full w-0 transition-all duration-500 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Add Item Form -->
+        <form id="add-form" class="flex gap-2 mb-6 relative z-10">
+            <input 
+                type="text" 
+                id="new-item-input" 
+                placeholder="أضيفي غرض جديد (مثل: مفاتيح، نظارة..)" 
+                class="flex-1 px-4 py-3 bg-rose-50/50 border border-rose-200/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 text-gray-700 placeholder-gray-400 transition"
+                autocomplete="off"
+            >
+            <button 
+                type="submit" 
+                class="bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-medium px-5 py-3 rounded-xl text-sm shadow-md shadow-rose-300/40 transition active:scale-95 flex items-center justify-center"
+            >
+                إضافة ➕
+            </button>
+        </form>
+
+        <!-- Items Checklist Container -->
+        <div class="space-y-3 mb-6 max-h-[340px] overflow-y-auto pr-1 relative z-10" id="items-container">
+            <!-- Items will be injected here via JavaScript -->
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="flex justify-between items-center pt-4 border-t border-rose-100/80 relative z-10 text-xs text-gray-400">
+            <button 
+                id="reset-btn" 
+                class="hover:text-rose-600 transition flex items-center gap-1 font-medium"
+            >
+                🔄 إعادة تعيين الكل ليوم جديد
+            </button>
+            <span class="text-rose-400 font-semibold">يوم سعيد يا رب 💕</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Default initial items
+        const defaultItems = [
+            { id: '1', text: 'النظارة 👓', checked: false },
+            { id: '2', text: 'المحفظة 👛', checked: false },
+            { id: '3', text: 'المفاتيح 🔑', checked: false },
+            { id: '4', text: 'الموبايل 📱', checked: false },
+            { id: '5', text: 'الشاحنة 🔋', checked: false }
+        ];
+
+        // Load items from localStorage or fallback to default
+        let items = JSON.parse(localStorage.getItem('rooya_checklist_items')) || defaultItems;
+
+        const itemsContainer = document.getElementById('items-container');
+        const addForm = document.getElementById('add-form');
+        const newItemInput = document.getElementById('new-item-input');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // Save items to localStorage
+        function saveItems() {
+            localStorage.setItem('rooya_checklist_items', JSON.stringify(items));
+        }
+
+        // Render checklist items and progress
+        function render() {
+            itemsContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-400 text-sm">
+                        القائمة فارغة! أضيفي أغراضك ليومك الجديد 🌸
+                    </div>
+                `;
+            }
+
+            let completedCount = 0;
+
+            items.forEach((item, index) => {
+                if (item.checked) completedCount++;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = `item-transition flex items-center justify-between p-3.5 rounded-2xl border ${item.checked ? 'bg-rose-50/40 border-rose-200/60 opacity-75' : 'bg-white border-rose-100 hover:border-rose-300/80 shadow-sm'}`;
+                
+                itemElement.innerHTML = `
+                    <label class="flex items-center gap-3.5 cursor-pointer flex-1 select-none">
+                        <input 
+                            type="checkbox" 
+                            data-id="${item.id}"
+                            ${item.checked ? 'checked' : ''}
+                            class="w-5 h-5 accent-rose-500 rounded cursor-pointer transition"
+                        >
+                        <span class="text-sm sm:text-base font-medium ${item.checked ? 'line-through text-gray-400' : 'text-gray-700'}">
+                            ${escapeHtml(item.text)}
+                        </span>
+                    </label>
+                    <button 
+                        data-id="${item.id}" 
+                        class="delete-btn text-gray-300 hover:text-rose-500 p-1.5 rounded-lg transition hover:bg-rose-50"
+                        title="حذف الغرض"
+                    >
+                        🗑️
+                    </button>
+                `;
+                itemsContainer.appendChild(itemElement);
+            });
+
+            // Update Progress
+            const total = items.length;
+            const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            
+            progressBar.style.width = `${percentage}%`;
+            progressText.innerText = `تم إنجاز ${completedCount} من ${total}`;
+            progressPercentage.innerText = `${percentage}%`;
+        }
+
+        // Helper to prevent XSS on user inputs
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Event listener for toggling checkboxes and deleting items
+        itemsContainer.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                const id = e.target.getAttribute('data-id');
+                const item = items.find(i => i.id === id);
+                if (item) {
+                    item.checked = e.target.checked;
+                    saveItems();
+                    render();
+                }
+            }
+        });
+
+        itemsContainer.addEventListener('click', (e) => {
+            if (e.target.closest('.delete-btn')) {
+                const btn = e.target.closest('.delete-btn');
+                const id = btn.getAttribute('data-id');
+                items = items.filter(i => i.id !== id);
+                saveItems();
+                render();
+            }
+        });
+
+        // Add new item submission
+        addForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = newItemInput.value.trim();
+            if (!text) return;
+
+            const newItem = {
+                id: Date.now().toString(),
+                text: text,
+                checked: false
+            };
+
+            items.push(newItem);
+            newItemInput.value = '';
+            saveItems();
+            render();
+        });
+
+        // Reset button handler
+        resetBtn.addEventListener('click', () => {
+            items.forEach(item => item.checked = false);
+            saveItems();
+            render();
+        });
+
+        // Initial render on load
+        render();
+    </script>
+</body>
+</html>
