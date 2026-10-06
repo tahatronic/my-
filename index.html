@@ -229,19 +229,35 @@
     </script>
 
 
-
-<!-- رسالة خاصة من طه (في منتصف الصفحة) -->
+<!-- رسالة عشوائية خاصة من طه -->
 <div id="taha-popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; font-family: 'Cairo', sans-serif; direction: rtl;">
     <div style="background: #fff0f3; border: 2px solid #ffb3c1; padding: 20px 25px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); width: 90%; max-width: 320px; text-align: right; position: relative;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <span style="font-weight: bold; color: #d81159; font-size: 15px;">💌 رسالة الجوكر:</span>
             <button onclick="document.getElementById('taha-popup').style.display='none'" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #888; padding: 0;">&times;</button>
         </div>
-        <p id="taha-message-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.6;">
-            صباح الخير عروستي 😊! لا تنسين نظارتج والمحفظة اليوم، وكوني زينة.. بالتوفيق! 🌸
+        <p id="taha-message-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.6; min-height: 60px;">
+            جاري تحميل الرسالة...
         </p>
     </div>
 </div>
+
+<script>
+    // مصفوفة الرسائل (يكمدك تضيف قد ما تحب بين الأقواس)
+    const tahaMessages = [
+        "صباح الخير عروستي 😊 ! لا تنسين نظارتج والمحفظة اليوم، وكوني زينة.. بالتوفيق! 🌸",
+        "يوم سعيد ومليان إنجازات يا عيوني، ديري بالچ على نفسج زين وموفقة بشغلج! ☕",
+        "صباح الورد! تذكري دايماً إنچ قدها، وخلّي ابتسامتج منورة اليوم ✨",
+        "ها يا مبدعة؟ تأكدي من أغراضج كلها بالشنطة، وربي يوفقج بيومج! ❤️",
+        "ان صح مو شخص مثالي بس الحمد الله الله رزقني ب عروسه مثلج  ✨"
+         "لا تنسين تتصدقين و لو بربع دينار عروستي😊 ❤️",
+        "ادعي الي الله يوفقني و يهديني  🤲"
+    ];
+
+    // اختيار رسالة بشكل عشوائي عند فتح الصفحة
+    const randomIndex = Math.floor(Math.random() * tahaMessages.length);
+    document.getElementById('taha-message-text').innerText = tahaMessages[randomIndex];
+</script>
 
     
 </body>
