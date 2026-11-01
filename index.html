@@ -13,7 +13,6 @@
         .custom-shadow {
             box-shadow: 0 10px 30px -5px rgba(244, 114, 182, 0.2);
         }
-        /* Custom smooth transition for checkboxes and text */
         .item-transition {
             transition: all 0.2s ease-in-out;
         }
@@ -43,7 +42,7 @@
         <!-- Progress Bar Section -->
         <div class="mb-6 relative z-10">
             <div class="flex justify-between items-center mb-2 text-xs font-semibold text-gray-600">
-                <span id="progress-text">تم إنجاز 0 من 5</span>
+                <span id="progress-text">تم إنجاز 0 من 0</span>
                 <span id="progress-percentage">0%</span>
             </div>
             <div class="w-full bg-rose-100/60 h-2.5 rounded-full overflow-hidden">
@@ -87,17 +86,32 @@
     </div>
 
     <script>
-        // Default initial items
+        // العناصر الافتراضية الأساسية
         const defaultItems = [
-            { id: '1', text: 'النظارة 👓', checked: false },
-            { id: '2', text: 'المحفظة 👛', checked: false },
-            { id: '3', text: 'المفاتيح 🔑', checked: false },
-            { id: '4', text: 'الموبايل 📱', checked: false },
-            { id: '5', text: 'الشاحنة 🔋', checked: false }
+            { id: '1', text: ' وجبتج 🥗', checked: false },
+            { id: '2', text: 'النظارة 👓', checked: false },
+            { id: '3', text: 'المحفظة 👛', checked: false },
+            { id: '4', text: 'المفاتيح 🔑', checked: false },
+            { id: '5', text: 'الموبايل 📱', checked: false },
+            { id: '6', text: 'الشاحنة 🔋', checked: false },
+
         ];
 
-        // Load items from localStorage or fallback to default
-        let items = JSON.parse(localStorage.getItem('rooya_checklist_items')) || defaultItems;
+        // نظام دمج ذكي: يحافظ على الأشياء اللي ضفتها بايدك وما يخليها تنمَسح
+        let savedItems = JSON.parse(localStorage.getItem('rooya_checklist_v3')) || [];
+        
+        let items = [];
+        if (savedItems.length === 0) {
+            items = defaultItems;
+        } else {
+            // دمج العناصر القديمة مع أي عناصر جديدة أضيفت بالافتراضي
+            items = savedItems;
+            defaultItems.forEach(defItem => {
+                if (!items.some(i => i.text === defItem.text)) {
+                    items.push(defItem);
+                }
+            });
+        }
 
         const itemsContainer = document.getElementById('items-container');
         const addForm = document.getElementById('add-form');
@@ -107,12 +121,12 @@
         const progressPercentage = document.getElementById('progress-percentage');
         const resetBtn = document.getElementById('reset-btn');
 
-        // Save items to localStorage
+        // حفظ العناصر في الذاكرة
         function saveItems() {
-            localStorage.setItem('rooya_checklist_items', JSON.stringify(items));
+            localStorage.setItem('rooya_checklist_v3', JSON.stringify(items));
         }
 
-        // Render checklist items and progress
+        // رسم العناصر بالواجهة
         function render() {
             itemsContainer.innerHTML = '';
 
@@ -126,7 +140,7 @@
 
             let completedCount = 0;
 
-            items.forEach((item, index) => {
+            items.forEach((item) => {
                 if (item.checked) completedCount++;
 
                 const itemElement = document.createElement('div');
@@ -155,7 +169,7 @@
                 itemsContainer.appendChild(itemElement);
             });
 
-            // Update Progress
+            // تحديث شريط التقدم
             const total = items.length;
             const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
             
@@ -164,7 +178,6 @@
             progressPercentage.innerText = `${percentage}%`;
         }
 
-        // Helper to prevent XSS on user inputs
         function escapeHtml(text) {
             const map = {
                 '&': '&amp;',
@@ -176,7 +189,7 @@
             return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
-        // Event listener for toggling checkboxes and deleting items
+        // تفاعل الصح (Checkbox) وحذف العنصر
         itemsContainer.addEventListener('change', (e) => {
             if (e.target.type === 'checkbox') {
                 const id = e.target.getAttribute('data-id');
@@ -199,7 +212,7 @@
             }
         });
 
-        // Add new item submission
+        // إضافة غرض جديد يدوي
         addForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = newItemInput.value.trim();
@@ -217,51 +230,45 @@
             render();
         });
 
-        // Reset button handler
+        // زر إعادة التعيين (يرجع الصحوك تنشال بس العناصر اليدوية تبقى موجودة)
         resetBtn.addEventListener('click', () => {
             items.forEach(item => item.checked = false);
             saveItems();
             render();
         });
 
-        // Initial render on load
         render();
     </script>
 
-
-<!-- رسالة عشوائية خاصة من طه -->
-<div id="taha-popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; font-family: 'Cairo', sans-serif; direction: rtl;">
-    <div style="background: #fff0f3; border: 2px solid #ffb3c1; padding: 20px 25px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); width: 90%; max-width: 320px; text-align: right; position: relative;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span style="font-weight: bold; color: #d81159; font-size: 15px;">💌 رسالة الجوكر:</span>
-            <button onclick="document.getElementById('taha-popup').style.display='none'" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #888; padding: 0;">&times;</button>
+    <!-- رسالة عشوائية خاصة من طه -->
+    <div id="taha-popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; font-family: 'Cairo', sans-serif; direction: rtl;">
+        <div style="background: #fff0f3; border: 2px solid #ffb3c1; padding: 20px 25px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); width: 90%; max-width: 320px; text-align: right; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-weight: bold; color: #d81159; font-size: 15px;">💌 رسالة الجوكر:</span>
+                <button onclick="document.getElementById('taha-popup').style.display='none'" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #888; padding: 0;">&times;</button>
+            </div>
+            <p id="taha-message-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.6; min-height: 60px;">
+                جاري تحميل الرسالة...
+            </p>
         </div>
-        <p id="taha-message-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.6; min-height: 60px;">
-            جاري تحميل الرسالة...
-        </p>
     </div>
-</div>
 
-<script>
-    // مصفوفة الرسائل (يكمدك تضيف قد ما تحب بين الأقواس)
-   const tahaMessages = [
-        "صباح الخير عروستي 😊 ! لا تنسين نظارتج والمحفظة اليوم، وكوني زينة.. بالتوفيق! 🌸",
-        "يوم سعيد ومليان إنجازات يا  عروستي 😊، ديري بالچ على نفسج زين وموفقة ! ☕️",
-        "صباح الورد ! تذكري دايماً إنچ قدها، وخلّي ابتسامتج منورة اليوم ✨",
-        "ها يا مبدعة؟ تأكدي من أغراضج كلها بالشنطة، وربي يوفقج بيومج! ❤️",
-        "ان صح مو شخص مثالي بس الحمد الله الله رزقني ب عروسه مثلج  ✨",
-         "😊 لا تنسين تتصدقين و لو بربع دينار عروستي ❤️",
-        "ادعي الي الله يوفقني و يهديني  🤲",
-       "يالضحكتج تلملم كل تعب روحي* ويا بلسْم حنان يداوي مجروحي *ربي يسهل دربج وين ما تمشين *ويديم عليج الفرح ويشرح صروحي ❤️",
-       " عطر فاحت انفاسه وورد متفتح *وعيونج الحلوات بالدنيا تفرح *رب العرش يحفظج من كل عيون *ويجعل دربج الورد والياسمين يضّح  🤲"
+    <script>
+        const tahaMessages = [
+            "صباح الخير عروستي 😊 ! لا تنسين نظارتج والمحفظة اليوم، وكوني زينة.. بالتوفيق! 🌸",
+            "يوم سعيد ومليان إنجازات يا  عروستي 😊، ديري بالچ على نفسج زين وموفقة ! ☕️",
+            "صباح الورد ! تذكري دايماً إنچ قدها، وخلّي ابتسامتج منورة اليوم ✨",
+            "ها يا مبدعة؟ تأكدي من أغراضج كلها بالشنطة، وربي يوفقج بيومج! ❤️",
+            "ان صح مو شخص مثالي بس الحمد الله الله رزقني ب عروسه مثلج  ✨",
+            "😊 لا تنسين تتصدقين و لو بربع دينار عروستي ❤️",
+            "ادعي الي الله يوفقني و يهديني  🤲",
+            "يالضحكتج تلملم كل تعب روحي* ويا بلسْم حنان يداوي مجروحي *ربي يسهل دربج وين ما تمشين *ويديم عليج الفرح ويشرح صروحي ❤️",
+            "عطر فاحت انفاسه وورد متفتح *وعيونج الحلوات بالدنيا تفرح *رب العرش يحفظج من كل عيون *ويجعل دربج الورد والياسمين يضّح  🤲"
+        ];
 
-    ];
+        const randomIndex = Math.floor(Math.random() * tahaMessages.length);
+        document.getElementById('taha-message-text').innerText = tahaMessages[randomIndex];
+    </script>
 
-    // اختيار رسالة بشكل عشوائي عند فتح الصفحة
-    const randomIndex = Math.floor(Math.random() * tahaMessages.length);
-    document.getElementById('taha-message-text').innerText = tahaMessages[randomIndex];
-</script>
-
-    
 </body>
 </html>
